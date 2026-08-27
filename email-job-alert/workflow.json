@@ -1,0 +1,1 @@
+{"name": "Email Job Alert 2", "nodes": [{"parameters": {"rule": {"interval": [{"field": "hours", "hoursInterval": 24}]}}, "id": "schedule-trigger", "name": "Schedule Trigger", "type": "n8n-nodes-base.scheduleTrigger", "typeVersion": 1.2, "position": [0, 0]}]}
