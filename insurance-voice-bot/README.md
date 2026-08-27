@@ -73,9 +73,9 @@ You can keep the documents in a Google Drive folder and use another n8n workflow
 
 ---
 
-## File in This Folder
+## Workflow File
 
-- `workflow.json` — the complete n8n workflow (ready to import)
+- [`Halim_Insurance_Voice_Bot222 copy.json`](../Halim_Insurance_Voice_Bot222%20copy.json) — the complete n8n workflow (ready to import)
 
 ---
 
