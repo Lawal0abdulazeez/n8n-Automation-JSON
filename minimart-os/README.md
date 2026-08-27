@@ -81,9 +81,9 @@ You will need to create these sheets (or adapt the node column mappings) before 
 
 ---
 
-## File in This Folder
+## Workflow File
 
-- `workflow.json` — the complete n8n workflow (ready to import)
+- [`MiniMart OS - Full System.json`](../MiniMart%20OS%20-%20Full%20System.json) — the complete n8n workflow (ready to import)
 
 ---
 
