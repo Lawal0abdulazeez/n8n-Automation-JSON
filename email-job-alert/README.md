@@ -53,9 +53,9 @@ Every day this workflow looks for new remote job postings, picks the most releva
 
 ---
 
-## File in This Folder
+## Workflow File
 
-- `workflow.json` — the complete n8n workflow (ready to import)
+- [`Email Job Alert 2.json`](../Email%20Job%20Alert%202.json) — the complete n8n workflow (ready to import)
 
 ---
 
