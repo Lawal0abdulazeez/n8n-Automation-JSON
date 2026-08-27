@@ -1,0 +1,310 @@
+{
+  "name": "Halim_Insurance_Voice_Bot222 copy",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "20713160-3d34-474e-931e-0e3f855bd7d2",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -1872,
+        96
+      ],
+      "id": "aa675f2e-f804-4d3c-b35e-dc0fc47283db",
+      "name": "Webhook",
+      "webhookId": "20713160-3d34-474e-931e-0e3f855bd7d2"
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "inputType": "binary",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -1152,
+        112
+      ],
+      "id": "500c0024-9060-476d-b276-8a954d2aaa4c",
+      "name": "Transcribe a recording1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "dPyFwISYyYg4UmOd",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.content.parts[0].text }}",
+        "options": {
+          "systemMessage": "=You are Halim Insurance Assistant, an AI support agent for Halim Insurance.\nYour job is to:\n\nAnswer questions about Halim Insurance, its services, claims, policies, guidelines, and processes.\n\nAnswer general questions about insurance, such as premiums, claims, underwriting, risk, policy types, and basic explanations.\n\nGive answers that are accurate, concise, helpful, polite, and professional.\n\nRefer to the company as “Halim Insurance”.\n\nTool Usage\n\nYou have access to the following tools:\n\nVectorDB Search Tool — use this to look up company-specific information, policy details, FAQs, product descriptions, and internal documentation. Always call this tool when the user asks something company-specific, technical, or when you need factual confirmation.\n\nMemory Tool — use this to store user preferences or long-term information if necessary.\n\nChat Tool — use this to maintain conversational context and continuity.\n\nAnswering Rules\n\nIf a question is about Halim Insurance, always check the VectorDB first.\n\nIf the question is about general insurance concepts, answer directly without tools.\n\nIf the tool results do not provide enough info, say “Based on available information…” and give the best safe answer.\n\nDo not hallucinate unavailable policies or make financial/legal promises.\n\nKeep responses clear and simple.\n\nIf the transcription is unclear, politely ask the user to confirm.\n\nTone Guidelines\n\nFriendly\n\nProfessional\n\nSupportive\n\nClear and easy to understand",
+          "maxIterations": 103
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -752,
+        32
+      ],
+      "id": "603406a1-f8dd-4adb-8925-ebfd5ab3c673",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "mode": "retrieve-as-tool",
+        "toolDescription": "Get Details from DB",
+        "pineconeIndex": {
+          "__rl": true,
+          "value": "halim",
+          "mode": "list",
+          "cachedResultName": "halim"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        -544,
+        320
+      ],
+      "id": "5f5ab6fa-1cf6-4aba-926d-6d62bbdc9a2d",
+      "name": "Pinecone Vector Store",
+      "credentials": {
+        "pineconeApi": {
+          "id": "yMXgvWPwkHe2ZzGQ",
+          "name": "PineconeApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "dimensions": 512
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        -512,
+        544
+      ],
+      "id": "919100d7-d257-4de8-a840-40a5fb5f9e26",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "gcTXDIVlzqQKUV7X",
+          "name": "OpenAi account Org"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -848,
+        400
+      ],
+      "id": "e8438b57-c8cf-4ca6-944c-b795ab61e149",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "dPyFwISYyYg4UmOd",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "input": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 2.1,
+      "position": [
+        -288,
+        96
+      ],
+      "id": "09bff05e-2d83-4f6d-8079-8e9ead3e57fb",
+      "name": "Generate audio",
+      "credentials": {
+        "openAiApi": {
+          "id": "gcTXDIVlzqQKUV7X",
+          "name": "OpenAi account Org"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $json }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        352,
+        80
+      ],
+      "id": "f18141dc-05ff-4fc0-befd-3c503543ad2a",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. Force read the binary file buffer (Fixes \"filesystem-v2\" issue)\n// 'data' is the default name of the binary property from the Generate Audio node\nconst binaryBuffer = await this.helpers.getBinaryDataBuffer(0, 'data');\nconst audioBase64 = binaryBuffer.toString('base64');\n\n// 2. Get the Text Response from the \"AI Agent\" node\nconst aiResponseText = $('AI Agent').first().json.output;\n\n// 3. Get the original User Transcription from \"Transcribe a recording1\"\nconst userTranscription = $('Transcribe a recording1').first().json.content.parts[0].text;\n\nreturn {\n  json: {\n    text: aiResponseText,\n    user_query: userTranscription,\n    audio_base64: audioBase64\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "09e2e2f0-94f0-4a0c-8288-a1eb81360d6b",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get the Base64 string from the Webhook input\n// Your screenshot shows it is nested inside 'body'\nconst base64String = items[0].json.body.audio_base64;\n\n// If we found the audio string, convert it to a binary file\nif (base64String) {\n  return [\n    {\n      // Keep the original JSON data (like session_id) if you need it later\n      json: items[0].json,\n      \n      // Create the binary object that the Transcribe node expects\n      binary: {\n        data: {\n          data: base64String,\n          mimeType: 'audio/webm', // Your HTML recorder sends WebM audio\n          fileExtension: 'webm',\n          fileName: 'audio.webm'\n        }\n      }\n    }\n  ];\n}\n\n// If no audio was found, just pass the item through (prevents crashing, though transcription will fail)\nreturn items;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1520,
+        240
+      ],
+      "id": "f4b15373-78d1-4a09-a198-994040420db4",
+      "name": "Code in JavaScript1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe a recording1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Generate audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate audio": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "Transcribe a recording1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "cfcfab25-7947-430f-beca-f4a7231915bf",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d746e75aa910c1d4e6e9a87892d7e5343fb9f254fc30cd7eae4499996f727ea4"
+  },
+  "id": "r80sfFGiQGxpC8ln",
+  "tags": []
+}

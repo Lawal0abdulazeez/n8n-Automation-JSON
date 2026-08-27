@@ -1,0 +1,2184 @@
+{
+  "name": "MiniMart OS - Full System",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message",
+          "callback_query"
+        ],
+        "additionalFields": {}
+      },
+      "id": "a261e827-9b19-45bd-b585-ad9c08852848",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1104,
+        -432
+      ],
+      "webhookId": "ff974187-6366-43f3-ba7b-d20f0cbd7918",
+      "credentials": {
+        "telegramApi": {
+          "id": "rPYs9NXAmUyETXPK",
+          "name": "Minimart Hub"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "/",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    },
+                    "id": "de50a7b5-42e0-424b-aee1-f32dee7c30d4"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Commands"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "81d1f677-bdd1-4dbc-8015-68b5e26f94ce",
+                    "leftValue": "={{ $json.callback_query }}",
+                    "rightValue": "=",
+                    "operator": {
+                      "type": "object",
+                      "operation": "notEmpty",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Buttons"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "bb35c1b8-4e20-4cdc-b2f9-8689e2513d3b",
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "/",
+                    "operator": {
+                      "type": "string",
+                      "operation": "notStartsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Text Input"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5c733abd-92e3-48a8-b366-e4ea9a8d4a84",
+      "name": "Router: Event Type",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        -752,
+        -448
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk",
+          "mode": "list",
+          "cachedResultName": "MiniMart Hub",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 910061387,
+          "mode": "list",
+          "cachedResultName": "Bot_Sessions",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk/edit#gid=910061387"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "User_ID": "={{ $json.message.from.id }}",
+            "Current_Context": "MAIN_MENU"
+          },
+          "matchingColumns": [
+            "User_ID"
+          ],
+          "schema": [
+            {
+              "id": "User_ID",
+              "displayName": "User_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Current_Context",
+              "displayName": "Current_Context",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp_Data",
+              "displayName": "Temp_Data",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last_Active",
+              "displayName": "Last_Active",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "adb90629-56c7-407f-a0ba-db0d3506c01a",
+      "name": "Reset Session (/start)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        -752,
+        -928
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pT8kFwSa4eYbYd5A",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.User_ID }}",
+        "text": "👋 *Welcome to MiniMart Manager*|*Select an action below:*",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "=📉 Record Sale",
+                    "additionalFields": {
+                      "callback_data": "menu_sale"
+                    }
+                  },
+                  {
+                    "text": "🔍 Check Price",
+                    "additionalFields": {
+                      "callback_data": "menu_check"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "📦 Restock",
+                    "additionalFields": {
+                      "callback_data": "menu_restock"
+                    }
+                  },
+                  {
+                    "text": "📊 Daily Report",
+                    "additionalFields": {
+                      "callback_data": "menu_report"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "f1c203c2-229a-49cb-8e01-d80e40002e53",
+      "name": "Send Main Menu",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        -736,
+        -656
+      ],
+      "webhookId": "7cc5bda1-586d-4c4e-9b49-ac34fcc4ba06",
+      "notesInFlow": false,
+      "credentials": {
+        "telegramApi": {
+          "id": "rPYs9NXAmUyETXPK",
+          "name": "Minimart Hub"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "menu_check",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "a45a799b-239d-4ab6-9163-c1426470da6b"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Check Price"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "c011013c-ab15-4f4c-8928-610437f99e95",
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "menu_sale",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Menu Sale"
+            },
+            {
+              "renameOutput": true
+            },
+            {
+              "renameOutput": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "831ad7c6-274b-40c0-ab25-8567410fa99b",
+      "name": "Router: Button Clicks",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        -240,
+        -480
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk",
+          "mode": "list",
+          "cachedResultName": "MiniMart Hub",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 910061387,
+          "mode": "list",
+          "cachedResultName": "Bot_Sessions",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk/edit#gid=910061387"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Current_Context": "AWAITING_SALE_SCAN",
+            "User_ID": "={{ $json.callback_query.from.id }}"
+          },
+          "matchingColumns": [
+            "User_ID"
+          ],
+          "schema": [
+            {
+              "id": "User_ID",
+              "displayName": "User_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Current_Context",
+              "displayName": "Current_Context",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp_Data",
+              "displayName": "Temp_Data",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last_Active",
+              "displayName": "Last_Active",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "09d22eab-b916-48b1-a1db-6fa75d62fd72",
+      "name": "Set Context: Sale",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        144,
+        -1008
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pT8kFwSa4eYbYd5A",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.callback_query.message.chat.id }}",
+        "text": "📉 *New Sale Mode* | Scan the barcode or type the product name.",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🔙 Cancel",
+                    "additionalFields": {
+                      "callback_data": "cmd_cancel"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "3e7ce8b3-54cb-4e43-9b22-02a51a70984e",
+      "name": "Ask for Sale Item",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        144,
+        -736
+      ],
+      "webhookId": "e8284824-6430-4fa8-bcc6-cbd1f9b31ef8",
+      "credentials": {
+        "telegramApi": {
+          "id": "rPYs9NXAmUyETXPK",
+          "name": "Minimart Hub"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk",
+          "mode": "list",
+          "cachedResultName": "MiniMart Hub",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Inventory_Master",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Barcode/SKU",
+              "displayName": "Barcode/SKU",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Product Name",
+              "displayName": "Product Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Unit Price",
+              "displayName": "Unit Price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Current Stock",
+              "displayName": "Current Stock",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reorder Level",
+              "displayName": "Reorder Level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last Updated",
+              "displayName": "Last Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "d65b1571-ba67-4995-80fb-cc13d030d86a",
+      "name": "Set Context: Restock",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        560,
+        -336
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pT8kFwSa4eYbYd5A",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.callback_query.message.chat.id }}",
+        "text": "📦 *RESTOCK MODE*\n\nEnter the *Product Name* or barcode:",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "caecf67b-dc2d-4b1a-807b-fe5aa0c7981b",
+      "name": "Ask for Restock Name",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        816,
+        -336
+      ],
+      "webhookId": "a5e576c1-e4d9-427d-99cc-adb833a02fa6",
+      "credentials": {
+        "telegramApi": {
+          "id": "1ak2TOwT0bWid3a6",
+          "name": "Telegram axiabot reconcile"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk",
+          "mode": "list",
+          "cachedResultName": "MiniMart Hub",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 910061387,
+          "mode": "list",
+          "cachedResultName": "Bot_Sessions",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk/edit#gid=910061387"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "User_ID": "={{ $json.callback_query.from.id }}",
+            "Current_Context": "AWAITING_SEARCH_QUERY"
+          },
+          "matchingColumns": [
+            "User_ID"
+          ],
+          "schema": [
+            {
+              "id": "User_ID",
+              "displayName": "User_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Current_Context",
+              "displayName": "Current_Context",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp_Data",
+              "displayName": "Temp_Data",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last_Active",
+              "displayName": "Last_Active",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "9cac816b-d019-4b3a-9a76-db6f7bb1eca2",
+      "name": "Set Context: Check Price",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        -224,
+        -992
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pT8kFwSa4eYbYd5A",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Router: Button Clicks').item.json.callback_query.message.chat.id }}",
+        "text": "🔍 *PRICE CHECK*\n\nEnter the *Product Name* or barcode:",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "=🔙 Cancel",
+                    "additionalFields": {
+                      "callback_data": "cmd_cancel"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "3c6e6496-3110-4b4b-a4f3-035e0e24b349",
+      "name": "Ask for Check Price Name",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        -208,
+        -720
+      ],
+      "webhookId": "448abee1-e90f-4339-bf7a-39233d24b655",
+      "credentials": {
+        "telegramApi": {
+          "id": "rPYs9NXAmUyETXPK",
+          "name": "Minimart Hub"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk",
+          "mode": "list",
+          "cachedResultName": "MiniMart Hub",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 910061387,
+          "mode": "list",
+          "cachedResultName": "Bot_Sessions",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk/edit#gid=910061387"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "User_ID",
+              "displayName": "User_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Current_Context",
+              "displayName": "Current_Context",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp_Data",
+              "displayName": "Temp_Data",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last_Active",
+              "displayName": "Last_Active",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "7ca52d6a-8190-4961-8a67-bafaa94c5c65",
+      "name": "Cancel Operation",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        560,
+        -160
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pT8kFwSa4eYbYd5A",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.callback_query.message.chat.id }}",
+        "text": "❌ Operation cancelled.\n\nReturning to Main Menu…",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {}
+          ]
+        },
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "8f846e9a-a539-44c0-b506-b1d5e9771922",
+      "name": "Send Cancel Message",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        816,
+        -160
+      ],
+      "webhookId": "363cb06d-c1ee-4ad6-9fa4-dd5a7449918c",
+      "credentials": {
+        "telegramApi": {
+          "id": "1ak2TOwT0bWid3a6",
+          "name": "Telegram axiabot reconcile"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk",
+          "mode": "list",
+          "cachedResultName": "MiniMart Hub",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 910061387,
+          "mode": "list",
+          "cachedResultName": "Bot_Sessions",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk/edit#gid=910061387"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "User_ID",
+              "lookupValue": "={{ $json.message.from.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b2dac392-7645-4269-ac5f-d7d7c5e76a76",
+      "name": "Get User Context",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        -752,
+        -128
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pT8kFwSa4eYbYd5A",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Get User Context').item.json.Current_Context }}",
+                    "rightValue": "AWAITING_SEARCH_QUERY",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "634ac5f0-2e7f-4d0a-bef5-665fc16e33e6"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Check Price"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "id": "b01f922a-e7aa-4f1d-94ee-142750e00582",
+                    "leftValue": "={{ $('Get User Context').item.json.Current_Context }}",
+                    "rightValue": "AWAITING_SALE_SCAN",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Record Sales"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1172433a-6ea3-4b56-929c-582b8fc5c92a",
+      "name": "Router: Context",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3,
+      "position": [
+        -768,
+        128
+      ]
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk",
+          "mode": "list",
+          "cachedResultName": "MiniMart Hub",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Inventory_Master",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk/edit#gid=0"
+        },
+        "options": {}
+      },
+      "id": "0656c69b-ca01-491c-9acb-cb86dfc5497a",
+      "name": "Search Inventory (Generic)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        464,
+        1216
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pT8kFwSa4eYbYd5A",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+        "text": "=Product Not Found",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "Main Menu",
+                    "additionalFields": {
+                      "callback_data": "/start"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "77ef4d60-9449-4200-be47-c28e0bb071d9",
+      "name": "Invalid Product Message",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        -2224,
+        848
+      ],
+      "webhookId": "5aee935a-cfcd-4e43-8d77-456b4d899e49",
+      "credentials": {
+        "telegramApi": {
+          "id": "rPYs9NXAmUyETXPK",
+          "name": "Minimart Hub"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk",
+          "mode": "list",
+          "cachedResultName": "MiniMart Hub",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1200676816,
+          "mode": "list",
+          "cachedResultName": "Transaction_Log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk/edit#gid=1200676816"
+        },
+        "options": {}
+      },
+      "id": "06850bf6-2728-4a3c-866a-2f0dc5be0371",
+      "name": "Save Item in Temp (Sale/Restock)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        880,
+        1088
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pT8kFwSa4eYbYd5A",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "📊 *How many units?*\nChoose below or type manually.",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {}
+          ]
+        },
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "bf00ede6-da40-44b6-a620-96a687460e3e",
+      "name": "Ask for Quantity",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        1136,
+        1088
+      ],
+      "webhookId": "47d34c89-5ddd-470a-aaaf-6703dd290d00",
+      "credentials": {
+        "telegramApi": {
+          "id": "1ak2TOwT0bWid3a6",
+          "name": "Telegram axiabot reconcile"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return {\n  qty: parseInt($json.callback_query.data.split('_')[1])\n};"
+      },
+      "id": "0d5a7788-9db3-4e0c-b8dc-c51d3e0d3251",
+      "name": "Extract Qty from Button",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        912,
+        496
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk",
+          "mode": "list",
+          "cachedResultName": "MiniMart Hub",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1200676816,
+          "mode": "list",
+          "cachedResultName": "Transaction_Log",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk/edit#gid=1200676816"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "User",
+              "displayName": "User",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Action Type",
+              "displayName": "Action Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Product Name",
+              "displayName": "Product Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Quantity Change",
+              "displayName": "Quantity Change",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Revenue",
+              "displayName": "Revenue",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "b0e8c7b0-92fb-4fcd-9ccb-c3dc4efc39f4",
+      "name": "Get Temp_Data (Selected Item)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1232,
+        432
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pT8kFwSa4eYbYd5A",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk",
+          "mode": "list",
+          "cachedResultName": "MiniMart Hub",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Transaction_Log",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ new Date().toLocaleString() }}",
+            "User": "={{ $json.callback_query.from.first_name }}",
+            "Action": "SALE",
+            "Product_Name": "={{ $json.Temp_Data }}",
+            "Qty_Change": "={{ -$node['Extract Qty from Button'].json.qty }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "273f130d-268f-4fe2-8306-1d296f8b2f05",
+      "name": "Log Transaction (Sale)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1696,
+        224
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pT8kFwSa4eYbYd5A",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk",
+          "mode": "list",
+          "cachedResultName": "MiniMart Hub",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Transaction_Log",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ new Date().toLocaleString() }}",
+            "User": "={{ $json.callback_query.from.first_name }}",
+            "Action": "RESTOCK",
+            "Product_Name": "={{ $json.Temp_Data }}",
+            "Qty_Change": "={{ $node['Extract Qty from Button'].json.qty }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "57dec6a6-b270-4b05-aeba-c55a2736d6d7",
+      "name": "Log Transaction (Restock)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        1792,
+        704
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pT8kFwSa4eYbYd5A",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.callback_query.message.chat.id }}",
+        "text": "={{ '✅ *SALE COMPLETED!*\\n\\nSold ' + $node['Extract Qty from Button'].json.qty + 'x ' + $json.Temp_Data + '\\n_Inventory Updated._' }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {}
+          ]
+        },
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "38430033-97a8-4ce9-8dc7-3701dcee8b58",
+      "name": "Success Message (Sale)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        1856,
+        352
+      ],
+      "webhookId": "9d73fb41-3cf4-404f-843b-d653db707542",
+      "credentials": {
+        "telegramApi": {
+          "id": "1ak2TOwT0bWid3a6",
+          "name": "Telegram axiabot reconcile"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.callback_query.message.chat.id }}",
+        "text": "={{ '📦 *RESTOCK SUCCESSFUL!*\\n\\nAdded ' + $node['Extract Qty from Button'].json.qty + 'x ' + $json.Temp_Data + '\\n_Stock Updated._' }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {}
+          ]
+        },
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "c2caf935-c657-42cb-9d46-4e035d51b155",
+      "name": "Success Message (Restock)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        1920,
+        528
+      ],
+      "webhookId": "af1c5728-a074-4b3d-8a48-490696ff1c56",
+      "credentials": {
+        "telegramApi": {
+          "id": "1ak2TOwT0bWid3a6",
+          "name": "Telegram axiabot reconcile"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+        "text": "=📦 Product: {{ $json[\"Product Name\"] }}\n💰 Price: ₦{{ $json[\"Unit Price\"] }}\n🔢 Stock: {{ $json[\"Current Stock\"] }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {}
+          ]
+        },
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "d4fd7cba-acac-45e9-bba7-f9c572cc9ed5",
+      "name": "Send Price Check Result",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.1,
+      "position": [
+        -1584,
+        592
+      ],
+      "webhookId": "db184777-f496-4a84-9150-80ba507d194d",
+      "credentials": {
+        "telegramApi": {
+          "id": "rPYs9NXAmUyETXPK",
+          "name": "Minimart Hub"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk",
+          "mode": "list",
+          "cachedResultName": "MiniMart Hub",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Inventory_Master",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Barcode/SKU",
+              "displayName": "Barcode/SKU",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Product Name",
+              "displayName": "Product Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Category",
+              "displayName": "Category",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Unit Price",
+              "displayName": "Unit Price",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Current Stock",
+              "displayName": "Current Stock",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Reorder Level",
+              "displayName": "Reorder Level",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last Updated",
+              "displayName": "Last Updated",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "f4a4ecae-5693-4894-9b54-132d45fc0050",
+      "name": "Set Context: Sale QTY",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [
+        816,
+        1312
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pT8kFwSa4eYbYd5A",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "d6a94915-00ca-4107-961e-efdc57752292",
+              "leftValue": "={{ $json.message.text }}",
+              "rightValue": "/start",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -784,
+        -1168
+      ],
+      "id": "8edd52b4-f96b-41f1-82bc-b785e7745e0d",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk",
+          "mode": "list",
+          "cachedResultName": "MiniMart Hub",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Inventory_Master",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Product Name",
+              "lookupValue": "={{ $node[\"Telegram Trigger\"].json[\"message\"][\"text\"] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1904,
+        368
+      ],
+      "id": "a143f42f-455f-49cc-87db-cdb993017891",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pT8kFwSa4eYbYd5A",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "5fce4482-6d25-4240-862c-415b07db224b",
+              "leftValue": "={{ $json}}",
+              "rightValue": "",
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -1888,
+        608
+      ],
+      "id": "b136be9a-5728-469f-ae64-b84beacebdf8",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk",
+          "mode": "list",
+          "cachedResultName": "MiniMart Hub",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 910061387,
+          "mode": "list",
+          "cachedResultName": "Bot_Sessions",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk/edit#gid=910061387"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "User_ID": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+            "Current_Context": "Done"
+          },
+          "matchingColumns": [
+            "User_ID"
+          ],
+          "schema": [
+            {
+              "id": "User_ID",
+              "displayName": "User_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Current_Context",
+              "displayName": "Current_Context",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp_Data",
+              "displayName": "Temp_Data",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last_Active",
+              "displayName": "Last_Active",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -1584,
+        912
+      ],
+      "id": "52d1c236-d6ed-4756-a7fe-c6b532ed7c5a",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pT8kFwSa4eYbYd5A",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "42d971c7-abc3-474d-b2c1-95974e600f97",
+              "leftValue": "={{ $json[\"Current Stock\"] }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -768,
+        704
+      ],
+      "id": "879714c6-001e-4e6d-9e13-414c5a79b318",
+      "name": "If2"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk",
+          "mode": "list",
+          "cachedResultName": "MiniMart Hub",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 910061387,
+          "mode": "list",
+          "cachedResultName": "Bot_Sessions",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk/edit#gid=910061387"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "User_ID": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+            "Current_Context": "AWAITING_SALE_QTY",
+            "Temp_Data": "={{ $json[\"Product Name\"] }}"
+          },
+          "matchingColumns": [
+            "User_ID"
+          ],
+          "schema": [
+            {
+              "id": "User_ID",
+              "displayName": "User_ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Current_Context",
+              "displayName": "Current_Context",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Temp_Data",
+              "displayName": "Temp_Data",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Last_Active",
+              "displayName": "Last_Active",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -800,
+        1024
+      ],
+      "id": "0742605f-8aee-4d09-851b-fce942b28031",
+      "name": "Append or update row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pT8kFwSa4eYbYd5A",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "=✅ Found: {{ $('Get row(s) in sheet2').item.json[\"Product Name\"] }}\n💰 Price: ₦{{ $('Get row(s) in sheet2').item.json[\"Unit Price\"] }}\n📦 In Stock: {{ $('Get row(s) in sheet2').item.json[\"Current Stock\"] }}\n\nSelect Quantity to Sell:",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "[ 1 ]",
+                    "additionalFields": {
+                      "callback_data": "(qty_1)"
+                    }
+                  },
+                  {
+                    "text": "[ 2 ]",
+                    "additionalFields": {
+                      "callback_data": "(qty_2)"
+                    }
+                  },
+                  {
+                    "text": "[ 3 ]",
+                    "additionalFields": {
+                      "callback_data": "(qty_3)"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "[ 5 ]",
+                    "additionalFields": {
+                      "callback_data": "(qty_5)"
+                    }
+                  },
+                  {
+                    "text": "[ 10 ]",
+                    "additionalFields": {
+                      "callback_data": "(qty_10)"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "[ 🔙 Cancel ]",
+                    "additionalFields": {
+                      "callback_data": "(cmd_cancel)"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -368,
+        1024
+      ],
+      "id": "ecbc9f05-8490-4ca5-957d-6b976b2236b4",
+      "name": "Send a text message",
+      "webhookId": "17e6e296-fb65-450b-9413-0958be4579fb",
+      "credentials": {
+        "telegramApi": {
+          "id": "rPYs9NXAmUyETXPK",
+          "name": "Minimart Hub"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk",
+          "mode": "list",
+          "cachedResultName": "MiniMart Hub",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Inventory_Master",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1b8hGEGyZs36WKXnoQhFghLrVWXZ1XqFANR9hAobxewk/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Product Name",
+              "lookupValue": "={{ $node[\"Telegram Trigger\"].json[\"message\"][\"text\"] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -768,
+        384
+      ],
+      "id": "ee12cd88-1348-486d-aad1-befc4cfab59a",
+      "name": "Get row(s) in sheet2",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pT8kFwSa4eYbYd5A",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Router: Event Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reset Session (/start)": {
+      "main": [
+        [
+          {
+            "node": "Send Main Menu",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get User Context": {
+      "main": [
+        [
+          {
+            "node": "Router: Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Inventory (Generic)": {
+      "main": [
+        []
+      ]
+    },
+    "Extract Qty from Button": {
+      "main": [
+        [
+          {
+            "node": "Get Temp_Data (Selected Item)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Temp_Data (Selected Item)": {
+      "main": [
+        [
+          {
+            "node": "Log Transaction (Sale)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Success Message (Sale)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log Transaction (Restock)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Success Message (Restock)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Context: Sale": {
+      "main": [
+        [
+          {
+            "node": "Ask for Sale Item",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Context: Restock": {
+      "main": [
+        [
+          {
+            "node": "Ask for Restock Name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Context: Check Price": {
+      "main": [
+        [
+          {
+            "node": "Ask for Check Price Name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cancel Operation": {
+      "main": [
+        [
+          {
+            "node": "Send Cancel Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Router: Event Type": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Router: Button Clicks",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get User Context",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Reset Session (/start)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Router: Button Clicks": {
+      "main": [
+        [
+          {
+            "node": "Set Context: Check Price",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Context: Sale",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [],
+        []
+      ]
+    },
+    "Router: Context": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get row(s) in sheet2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Send Price Check Result",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Invalid Product Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Price Check Result": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If2": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Append or update row in sheet1": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet2": {
+      "main": [
+        [
+          {
+            "node": "If2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "5b4c1237-bb6f-458b-987e-5a3293be7126",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d746e75aa910c1d4e6e9a87892d7e5343fb9f254fc30cd7eae4499996f727ea4"
+  },
+  "id": "Eh6AMepzzvK0Ijt1",
+  "tags": []
+}

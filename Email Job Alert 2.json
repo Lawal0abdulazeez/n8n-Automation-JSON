@@ -1,0 +1,318 @@
+{
+  "name": "Email Job Alert 2",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 9 * * *"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        272,
+        96
+      ],
+      "id": "ba6c5440-4d5e-4bf8-9a2b-ec53009f2a3f",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://remoteok.com/api",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        512,
+        96
+      ],
+      "id": "2585179d-de39-4aaa-8c8e-63f536960c74",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "jsCode": "const allItems = $input.all().filter(item => item.json.position); // skip metadata row\n\n// Limit to 10 jobs max to avoid timeout\nconst limited = allItems.slice(0, 10);\n\nconst formattedJobs = limited.map((item, index) => {\n  const job = item.json;\n  const cleanDesc = job.description\n    ? job.description.replace(/<[^>]*>/g, ' ').replace(/\\s+/g, ' ').trim()\n    : 'No description provided';\n\n  const salary = (job.salary_min && job.salary_max && job.salary_max > 0)\n    ? `$${job.salary_min} - $${job.salary_max}`\n    : 'Not specified';\n\n  return `=== JOB ${index + 1} ===\nTitle: ${job.position || 'N/A'}\nCompany: ${job.company || 'N/A'}\nLocation: ${job.location || 'Remote'}\nSalary: ${salary}\nApply: ${job.apply_url || job.url || 'N/A'}\nTags: ${job.tags ? job.tags.join(', ') : 'N/A'}\nDescription: ${cleanDesc.substring(0, 300)}\n---`;\n}).join('\\n\\n');\n\nreturn [{\n  json: {\n    jobs_text: formattedJobs,\n    total_jobs: limited.length\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1200,
+        96
+      ],
+      "id": "62a85ad3-f19f-4199-a373-a044d362560b",
+      "name": "Code - Format Jobs"
+    },
+    {
+      "parameters": {
+        "jsCode": "const agentOutput = $input.first().json.output || '';\n\n// Build a clean HTML email\nconst today = new Date().toLocaleDateString('en-US', {\n  weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'\n});\n\nconst html = `<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"UTF-8\">\n<style>\n  body { font-family: Arial, sans-serif; max-width: 700px; margin: 0 auto; color: #333; }\n  h1 { background: #1a73e8; color: #fff; padding: 20px; border-radius: 6px; }\n  h2 { color: #1a73e8; border-bottom: 2px solid #e8f0fe; padding-bottom: 6px; }\n  .job { background: #f9f9f9; border: 1px solid #ddd; border-radius: 8px; padding: 16px; margin-bottom: 20px; }\n  ul { padding-left: 20px; }\n  li { margin-bottom: 6px; }\n  a { color: #1a73e8; }\n  .footer { color: #888; font-size: 12px; text-align: center; margin-top: 30px; }\n</style>\n</head>\n<body>\n  <h1>🚀 Daily Job Alert — ${today}</h1>\n  <p>Here are today's matching remote jobs in AI, Python, and Data:</p>\n  ${agentOutput}\n  <div class=\"footer\">Powered by Michael · Delivered daily </div>\n</body>\n</html>`;\n\n\nreturn [{ json: { html_body: html, subject: `Job Alert: Remote AI & Python Jobs — ${today}` } }];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1824,
+        96
+      ],
+      "id": "4b23a1a4-cb54-476e-8dcb-5865192e8e5d",
+      "name": "Code - Build HTML Email"
+    },
+    {
+      "parameters": {
+        "sendTo": "aibnbazz@gmail.com",
+        "subject": "={{ $json.subject }}",
+        "message": "={{ $json.html_body }}\n{{ $('Basic LLM Chain').item.json.text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2048,
+        96
+      ],
+      "id": "1e465b30-8bb6-47d3-9ab0-bb21a7f0d72e",
+      "name": "Gmail - Send Alert",
+      "webhookId": "a5c61291-bb82-4188-b174-13f35e371898",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "4AZqIXB5njMnVzif",
+          "name": "testing gmail"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Add this as a new Code node between HTTP Request and Filter\nreturn $input.all()\n  .filter(item => item.json.position) // skip the metadata first row\n  .map(item => {\n    const tags = (item.json.tags || []).join(',').toLowerCase();\n    return {\n      json: {\n        ...item.json,\n        tags_string: tags\n      }\n    };\n  });"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        96
+      ],
+      "id": "7d4c79b0-df1a-4503-ba7d-184668075d0d",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "3cf06c81-5004-4fca-ba41-d6b492509243",
+              "leftValue": "={{ $json.tags_string }}",
+              "rightValue": "ai",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              }
+            },
+            {
+              "id": "e8db5235-c386-4e7d-80de-27e527e8922a",
+              "leftValue": "={{ $json.tags_string }}",
+              "rightValue": "data",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "611b57f8-ad50-4bf5-bd37-02535f13c245",
+              "leftValue": "={{ $json.tags_string }}",
+              "rightValue": "python",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "c0ab699d-b533-4c20-8cd0-ca70370bb3d1",
+              "leftValue": "={{ $json.tags_string }}",
+              "rightValue": "remote",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.3,
+      "position": [
+        976,
+        96
+      ],
+      "id": "dced190e-4b85-4de7-9347-44b9ae4f2617",
+      "name": "Filter1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Summarize these {{ $json.total_jobs }} remote job postings. For each job, output an HTML block like this:\n\n<div class=\"job\">\n  <h2>[Title] at [Company]</h2>\n  <ul>\n    <li><strong>Location:</strong> [location]</li>\n    <li><strong>Salary:</strong> [salary]</li>\n    <li><strong>Key Requirements:</strong> [2-3 bullet points from description]</li>\n    <li><strong>Apply:</strong> <a href=\"[url]\">[url]</a></li>\n  </ul>\n</div>\n\nJobs:\n{{ $json.jobs_text }}\n\nReturn only valid HTML, no markdown.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.8,
+      "position": [
+        1440,
+        96
+      ],
+      "id": "b224f4af-1ce6-4425-85b0-7fdc8c40db48",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1408,
+        272
+      ],
+      "id": "e224fb36-556a-4df9-a223-5e5db3a41388",
+      "name": "OpenAI Chat Model1",
+      "credentials": {
+        "openAiApi": {
+          "id": "gcTXDIVlzqQKUV7X",
+          "name": "OpenAi account Org"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Basic LLM Chain": [
+      {
+        "json": {
+          "text": "<div class=\"job\">\n  <h2>Head of Operations Overtime.ai at Acclaim AI</h2>\n  <ul>\n    <li><strong>Location:</strong> Miami, Miami, Florida, United States</li>\n    <li><strong>Salary:</strong> Not specified</li>\n    <li><strong>Key Requirements:</strong>\n      <ul>\n        <li>Experience managing receivables in a highly regulated environment</li>\n        <li>Ability to drive growth using AI-first approaches</li>\n        <li>Operational leadership in fintech or financial services preferred</li>\n      </ul>\n    </li>\n    <li><strong>Apply:</strong> <a href=\"https://remoteOK.com/remote-jobs/remote-head-of-operations-overtime-ai-acclaim-ai-1131709\">https://remoteOK.com/remote-jobs/remote-head-of-operations-overtime-ai-acclaim-ai-1131709</a></li>\n  </ul>\n</div>\n\n<div class=\"job\">\n  <h2>Expeditor Abbotsford at Cactus Club Cafe</h2>\n  <ul>\n    <li><strong>Location:</strong> Abbotsford</li>\n    <li><strong>Salary:</strong> Not specified</li>\n    <li><strong>Key Requirements:</strong>\n      <ul>\n        <li>Coordinate between culinary and service teams for timely dish delivery</li>\n        <li>Ensure precision and efficiency in meal execution</li>\n        <li>Passion for hospitality and teamwork</li>\n      </ul>\n    </li>\n    <li><strong>Apply:</strong> <a href=\"https://remoteOK.com/remote-jobs/remote-expeditor-abbotsford-cactus-club-cafe-1131762\">https://remoteOK.com/remote-jobs/remote-expeditor-abbotsford-cactus-club-cafe-1131762</a></li>\n  </ul>\n</div>\n\n<div class=\"job\">\n  <h2>Booking Coordinator No Experience Needed at Aisle and Abroad</h2>\n  <ul>\n    <li><strong>Location:</strong> New York, New York, United States</li>\n    <li><strong>Salary:</strong> Not specified</li>\n    <li><strong>Key Requirements:</strong>\n      <ul>\n        <li>Reliable and detail-oriented in managing bookings and reservations</li>\n        <li>Strong organizational skills to handle scheduling efficiently</li>\n        <li>Fully remote position supporting client coordination</li>\n      </ul>\n    </li>\n    <li><strong>Apply:</strong> <a href=\"https://remoteOK.com/remote-jobs/remote-booking-coordinator-no-experience-needed-aisle-and-abroad-1131708\">https://remoteOK.com/remote-jobs/remote-booking-coordinator-no-experience-needed-aisle-and-abroad-1131708</a></li>\n  </ul>\n</div>\n\n<div class=\"job\">\n  <h2>Customer Service &amp; Reservations Associate at Aisle and Abroad</h2>\n  <ul>\n    <li><strong>Location:</strong> Georgia, Georgia, United States</li>\n    <li><strong>Salary:</strong> Not specified</li>\n    <li><strong>Key Requirements:</strong>\n      <ul>\n        <li>Provide dependable customer service and support client inquiries</li>\n        <li>Manage reservation coordination with accuracy</li>\n        <li>Focus on timely and service-oriented communication</li>\n      </ul>\n    </li>\n    <li><strong>Apply:</strong> <a href=\"https://remoteOK.com/remote-jobs/remote-customer-service-amp-reservations-associate-aisle-and-abroad-1131703\">https://remoteOK.com/remote-jobs/remote-customer-service-amp-reservations-associate-aisle-and-abroad-1131703</a></li>\n  </ul>\n</div>\n\n<div class=\"job\">\n  <h2>Cleaner at Dexterra Group</h2>\n  <ul>\n    <li><strong>Location:</strong> Gander</li>\n    <li><strong>Salary:</strong> Not specified</li>\n    <li><strong>Key Requirements:</strong>\n      <ul>\n        <li>Join a fast-growing, publicly listed company in North America</li>\n        <li>Be part-time or full-time with reliable work ethic</li>\n        <li>Support workplace cleanliness and safety standards</li>\n      </ul>\n    </li>\n    <li><strong>Apply:</strong> <a href=\"https://remoteOK.com/remote-jobs/remote-cleaner-dexterra-group-1131745\">https://remoteOK.com/remote-jobs/remote-cleaner-dexterra-group-1131745</a></li>\n  </ul>\n</div>\n\n<div class=\"job\">\n  <h2>Baker with Benefits at COBS Bread</h2>\n  <ul>\n    <li><strong>Location:</strong> Windsor</li>\n    <li><strong>Salary:</strong> Not specified</li>\n    <li><strong>Key Requirements:</strong>\n      <ul>\n        <li>Work at a top-ranked Canadian workplace providing growth opportunities</li>\n        <li>Commitment to quality and team collaboration in baking</li>\n        <li>Contribute to a supportive and engaging work environment</li>\n      </ul>\n    </li>\n    <li><strong>Apply:</strong> <a href=\"https://remoteOK.com/remote-jobs/remote-baker-with-benefits-cobs-bread-1131744\">https://remoteOK.com/remote-jobs/remote-baker-with-benefits-cobs-bread-1131744</a></li>\n  </ul>\n</div>\n\n<div class=\"job\">\n  <h2>Chief Medical Scribe Upto $80 hr at Mercor</h2>\n  <ul>\n    <li><strong>Location:</strong> New York, New York, United States</li>\n    <li><strong>Salary:</strong> Not specified</li>\n    <li><strong>Key Requirements:</strong>\n      <ul>\n        <li>Expertise in clinical documentation for healthcare settings</li>\n        <li>Contract position with focus on AI and medical data transcription</li>\n        <li>Work with leading AI research labs and innovative healthcare teams</li>\n      </ul>\n    </li>\n    <li><strong>Apply:</strong> <a href=\"https://remoteOK.com/remote-jobs/remote-chief-medical-scribe-upto-80-hr-mercor-1131711\">https://remoteOK.com/remote-jobs/remote-chief-medical-scribe-upto-80-hr-mercor-1131711</a></li>\n  </ul>\n</div>\n\n<div class=\"job\">\n  <h2>Pediatric Registered Nurse Upto $65 hr at Mercor</h2>\n  <ul>\n    <li><strong>Location:</strong> New York, New York, United States</li>\n    <li><strong>Salary:</strong> Not specified</li>\n    <li><strong>Key Requirements:</strong>\n      <ul>\n        <li>Contract role providing pediatric nursing care</li>\n        <li>Collaboration with AI-driven healthcare research teams</li>\n        <li>Experience in clinical pediatric nursing preferred</li>\n      </ul>\n    </li>\n    <li><strong>Apply:</strong> <a href=\"https://remoteOK.com/remote-jobs/remote-pediatric-registered-nurse-upto-65-hr-mercor-1131702\">https://remoteOK.com/remote-jobs/remote-pediatric-registered-nurse-upto-65-hr-mercor-1131702</a></li>\n  </ul>\n</div>\n\n<div class=\"job\">\n  <h2>Special Projects Lead at Tremendous</h2>\n  <ul>\n    <li><strong>Location:</strong> New York, New York, United States</li>\n    <li><strong>Salary:</strong> Not specified</li>\n    <li><strong>Key Requirements:</strong>\n      <ul>\n        <li>Lead special projects for a global payout platform</li>\n        <li>Work with large-scale enterprise clients and partners</li>\n        <li>Manage operational and strategic initiatives</li>\n      </ul>\n    </li>\n    <li><strong>Apply:</strong> <a href=\"https://remoteOK.com/remote-jobs/remote-special-projects-lead-tremendous-1131704\">https://remoteOK.com/remote-jobs/remote-special-projects-lead-tremendous-1131704</a></li>\n  </ul>\n</div>\n\n<div class=\"job\">\n  <h2>Care Manager 1 at Empathy</h2>\n  <ul>\n    <li><strong>Location:</strong> San Francisco, San Francisco, California, United States</li>\n    <li><strong>Salary:</strong> Not specified</li>\n    <li><strong>Key Requirements:</strong>\n      <ul>\n        <li>Guide families through challenging life events with care and empathy</li>\n        <li>Support clients with technology-driven and purpose-led solutions</li>\n        <li>Work full-time in a remote healthcare role</li>\n      </ul>\n    </li>\n    <li><strong>Apply:</strong> <a href=\"https://remoteOK.com/remote-jobs/remote-care-manager-1-empathy-1131705\">https://remoteOK.com/remote-jobs/remote-care-manager-1-empathy-1131705</a></li>\n  </ul>\n</div>"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Format Jobs": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - Build HTML Email": {
+      "main": [
+        [
+          {
+            "node": "Gmail - Send Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Filter1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter1": {
+      "main": [
+        [
+          {
+            "node": "Code - Format Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code - Build HTML Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false
+  },
+  "versionId": "22ffde6a-0677-4235-9ad0-eff343011012",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "d746e75aa910c1d4e6e9a87892d7e5343fb9f254fc30cd7eae4499996f727ea4"
+  },
+  "id": "rkTX3Ha0pP2UfPW0",
+  "tags": []
+}
